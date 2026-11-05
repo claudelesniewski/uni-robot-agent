@@ -1,0 +1,31 @@
+{
+ "task": "metaworld-button-press-topdown",
+ "seed": 0,
+ "success": true,
+ "success_ever": true,
+ "success_mode": "first",
+ "outcome": "success_reached",
+ "steps_used": 163,
+ "max_steps": 500,
+ "requests": 0,
+ "wall_time_s": 110.58,
+ "embodiment_mode": "sim",
+ "metrics": {
+  "success": 1,
+  "progress": 1.0,
+  "safety_events": 0,
+  "safe_failure": null,
+  "excellent": 1,
+  "execution_time_s": 2.037,
+  "execution_speed": 29.4479,
+  "control_dt_s": 0.0125,
+  "smoothness_sparc": -11.9027,
+  "avg_jerk": 1087.2798,
+  "path_length_m": 1.322,
+  "max_contact_force_n": 268.599
+ },
+ "video_size": [
+  320,
+  320
+ ]
+}

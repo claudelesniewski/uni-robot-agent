@@ -1,0 +1,9 @@
+{
+ "model": "haiku",
+ "agent_finished": false,
+ "task_success": false,
+ "turns": 30,
+ "tool_calls": 24,
+ "wall_s": 154.3,
+ "cost_usd": 0.0282
+}

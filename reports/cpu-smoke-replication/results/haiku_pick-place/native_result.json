@@ -1,0 +1,31 @@
+{
+ "task": "metaworld-pick-place",
+ "seed": 0,
+ "success": true,
+ "success_ever": true,
+ "success_mode": "first",
+ "outcome": "success_reached",
+ "steps_used": 178,
+ "max_steps": 500,
+ "requests": 0,
+ "wall_time_s": 176.36,
+ "embodiment_mode": "sim",
+ "metrics": {
+  "success": 1,
+  "progress": 1.0,
+  "safety_events": 0,
+  "safe_failure": null,
+  "excellent": 1,
+  "execution_time_s": 2.225,
+  "execution_speed": 26.9663,
+  "control_dt_s": 0.0125,
+  "smoothness_sparc": -8.6607,
+  "avg_jerk": 597.6302,
+  "path_length_m": 1.005,
+  "max_contact_force_n": 1112.287
+ },
+ "video_size": [
+  320,
+  320
+ ]
+}

@@ -1,0 +1,31 @@
+{
+ "task": "metaworld-push",
+ "seed": 0,
+ "success": false,
+ "success_ever": false,
+ "success_mode": "first",
+ "outcome": "agent_exited",
+ "steps_used": 63,
+ "max_steps": 500,
+ "requests": 0,
+ "wall_time_s": 157.12,
+ "embodiment_mode": "sim",
+ "metrics": {
+  "success": 0,
+  "progress": 0.0,
+  "safety_events": 0,
+  "safe_failure": 1,
+  "excellent": null,
+  "execution_time_s": 0.787,
+  "execution_speed": 0.0,
+  "control_dt_s": 0.0125,
+  "smoothness_sparc": -3.7249,
+  "avg_jerk": 652.7104,
+  "path_length_m": 0.4188,
+  "max_contact_force_n": 326.183
+ },
+ "video_size": [
+  320,
+  320
+ ]
+}

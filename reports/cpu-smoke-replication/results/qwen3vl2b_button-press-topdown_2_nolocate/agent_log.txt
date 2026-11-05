@@ -1,0 +1,25 @@
+turn 0: 40s, prompt=4857 out=26, calls=['capture_scene'] text=''
+   -> capture_scene({"cameras": ["corner", "topview"]}) ok=True stop=None err=
+turn 1: 12s, prompt=5150 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 2: 12s, prompt=5435 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": -1}) ok=True stop=None err=
+turn 3: 13s, prompt=5723 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 4: 14s, prompt=6008 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 5: 13s, prompt=6293 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 6: 15s, prompt=6578 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 7: 15s, prompt=6863 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 8: 15s, prompt=7148 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 9: 16s, prompt=7433 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+turn 10: 16s, prompt=7718 out=26, calls=['capture_scene'] text=''
+   -> capture_scene({"cameras": ["corner", "topview"]}) ok=True stop=None err=
+turn 11: 17s, prompt=8007 out=21, calls=['view_env_state'] text=''
+   -> view_env_state({"step": 0}) ok=True stop=None err=
+{"agent_finished": false, "task_success": false, "turns": 12, "wall_s": 198.5, "session_dir": "<work>/runs/rollout2/harness/robouse_tools_1793861014_1aa51556"}
