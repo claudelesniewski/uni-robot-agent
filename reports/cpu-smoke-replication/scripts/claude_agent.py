@@ -124,8 +124,11 @@ class ClaudePlanner:
         self.proc.stdin.flush()
         import queue
         while True:
+            remaining = timeout_s - (time.time() - t0)
+            if remaining <= 0:  # keepalive/stream lines must not extend the deadline
+                raise TimeoutError(f"planner gave no result within {timeout_s}s")
             try:
-                line = self.lines.get(timeout=max(1, timeout_s - (time.time() - t0)))
+                line = self.lines.get(timeout=remaining)
             except queue.Empty:
                 raise TimeoutError(f"planner gave no result within {timeout_s}s")
             if line is None:
