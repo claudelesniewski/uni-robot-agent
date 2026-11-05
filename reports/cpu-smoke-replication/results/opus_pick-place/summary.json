@@ -1,0 +1,10 @@
+{
+ "model": "opus",
+ "code_tool": false,
+ "agent_finished": false,
+ "task_success": true,
+ "turns": 10,
+ "tool_calls": 11,
+ "wall_s": 91.1,
+ "cost_usd": 0.2626
+}

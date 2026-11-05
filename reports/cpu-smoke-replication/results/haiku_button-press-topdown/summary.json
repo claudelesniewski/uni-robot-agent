@@ -1,0 +1,10 @@
+{
+ "model": "haiku",
+ "agent_finished": false,
+ "task_success": true,
+ "turns": 25,
+ "tool_calls": 19,
+ "wall_s": 148.4,
+ "cost_usd": 0.0204,
+ "cost_note": "corrected: CLI total_cost_usd is cumulative"
+}

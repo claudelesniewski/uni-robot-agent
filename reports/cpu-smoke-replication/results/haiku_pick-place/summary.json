@@ -1,0 +1,10 @@
+{
+ "model": "haiku",
+ "code_tool": false,
+ "agent_finished": false,
+ "task_success": true,
+ "turns": 19,
+ "tool_calls": 20,
+ "wall_s": 174.3,
+ "cost_usd": 0.0202
+}

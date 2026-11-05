@@ -1,0 +1,31 @@
+{
+ "task": "metaworld-drawer-close",
+ "seed": 0,
+ "success": false,
+ "success_ever": false,
+ "success_mode": "first",
+ "outcome": "agent_exited",
+ "steps_used": 5,
+ "max_steps": 500,
+ "requests": 0,
+ "wall_time_s": 160.25,
+ "embodiment_mode": "sim",
+ "metrics": {
+  "success": 0,
+  "progress": 0.0,
+  "safety_events": 0,
+  "safe_failure": 1,
+  "excellent": null,
+  "execution_time_s": 0.062,
+  "execution_speed": 0.0,
+  "control_dt_s": 0.0125,
+  "smoothness_sparc": null,
+  "avg_jerk": 0.0,
+  "path_length_m": 0.0,
+  "max_contact_force_n": 31.342
+ },
+ "video_size": [
+  320,
+  320
+ ]
+}

@@ -1,0 +1,10 @@
+{
+ "model": "opus",
+ "agent_finished": false,
+ "task_success": true,
+ "turns": 11,
+ "tool_calls": 11,
+ "wall_s": 85.6,
+ "cost_usd": 0.2711,
+ "cost_note": "corrected: CLI total_cost_usd is cumulative"
+}
