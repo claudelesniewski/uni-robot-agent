@@ -109,6 +109,10 @@ This batch ran Opus with the python tool (`--code`) once per admitted task confi
 
 One episode, `vision/metaworld-sweep-vision`, is excluded because its first planner call stalled twice. The costs are the CLI's list-price estimates; the batch actually ran on a subscription plan's session quota.
 
+![All 182 episodes: successes left, failures right](media/opus_batch_overview.jpg)
+
+[`media/opus_batch_overview.mp4`](media/opus_batch_overview.mp4) plays every episode's native recording at once, time-normalized so each clip runs from start to finish. Successes are bordered green and failures red. `scripts/make_batch_overview.py` regenerates it, along with a 200 px thumbnail video per episode.
+
 Observations:
 - **Two calibrated views help.** Success is highest on tabletop, which has two calibrated cameras and so supports triangulation. It is lower on the single-camera simulators (kitchen, robosuite, Fetch), where the agent has to recover depth from a single view.
 - **Single-camera failures match the paper.** The failures there look like the paper's spatial-grounding and geometric-coding modes:
