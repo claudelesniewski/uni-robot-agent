@@ -84,6 +84,51 @@ How the observations relate to the paper's claims:
 - **Depth isn't needed:** every success localized objects by RGB triangulation from calibrated cameras.
 - **Agent completion ≠ environment success:** no Claude run called `finish`. The environment ended each episode at the first success (`success_mode: first`), before the agent could verify it.
 
+## 3. Opus on every CPU-runnable RoboUse task (183 episodes)
+
+This batch ran Opus with the python tool (`--code`) once per admitted task configuration in the five installed simulators:
+- **Tasks:** tabletop (86), MetaWorld (70, excluding the 4 above), kitchen (10), robosuite (11) and Fetch (6).
+- **Seed:** each task's own default.
+- **Limits:** at most 40 turns and 15 minutes per episode.
+- **Scripts:** `scripts/batch.py`, `scripts/run_episode_p.sh` and `scripts/run_batch_fg.sh`.
+- **Results:** per-episode results are in [`opus_batch/results.csv`](opus_batch/results.csv); the planner summary and native outcome for each episode are in [`opus_batch/episodes.jsonl`](opus_batch/episodes.jsonl).
+
+| group | success | median turns | list-price cost |
+|---|---|---|---|
+| tabletop/libero-style | 12/12 (100%) | 8 | $3.46 |
+| tabletop/arc-style | 11/11 (100%) | 13 | $5.57 |
+| tabletop/vision | 28/31 (90%) | 12 | $16.05 |
+| tabletop/robo-use-families | 7/8 (88%) | 14.5 | $5.41 |
+| tabletop/hard | 16/20 (80%) | 24 | $17.49 |
+| tabletop/safety | 3/4 (75%) | 9 | $1.29 |
+| MetaWorld (incl. `vision/metaworld-*`) | 52/69 (75%) | 14 | $31.74 |
+| Fetch | 4/6 (67%) | 15.5 | $2.68 |
+| robosuite | 7/11 (64%) | 23 | $8.06 |
+| kitchen | 2/10 (20%) | 40 | $9.76 |
+| **total** | **142/182 (78%)** | | **$101.52** |
+
+One episode, `vision/metaworld-sweep-vision`, is excluded because its first planner call stalled twice. The costs are the CLI's list-price estimates; the batch actually ran on a subscription plan's session quota.
+
+![All 182 episodes: successes left, failures right](media/opus_batch_overview.jpg)
+
+[`media/opus_batch_overview.mp4`](media/opus_batch_overview.mp4) plays every episode's native recording at once, time-normalized so each clip runs from start to finish. Successes are bordered green and failures red. `scripts/make_batch_overview.py` regenerates it, along with a 200 px thumbnail video per episode.
+
+Observations:
+- **Two calibrated views help.** Success is highest on tabletop, which has two calibrated cameras and so supports triangulation. It is lower on the single-camera simulators (kitchen, robosuite, Fetch), where the agent has to recover depth from a single view.
+- **Single-camera failures match the paper.** The failures there look like the paper's spatial-grounding and geometric-coding modes:
+  - Fetch `reach` tasks: Opus probed the ray to the floating goal sphere with the gripper and then committed to the wrong depth.
+  - Kitchen: Opus usually ran out of turns while computing orientations under the world-Y-roll constraint.
+- **Agent completion ≠ environment success.** Opus called `finish` in 101 episodes, and 13 of those were actually failures. In another 54 episodes the environment registered success before Opus called `finish`.
+- **The `hard-uncal-*` tasks are not real uncalibrated tests.** The uni-robot-agent RoboUse adapter still supplies MuJoCo render-camera calibration for cameras that the task lists under `uncalibrated_cameras`. The tasks' results therefore don't test the paper's §5.1 "RGB without camera parameters" condition. The adapter should probably honour that field.
+
+Planner-protocol caveats that don't apply to the built-in runtimes, because those use native tool calling:
+- **Tool calls in XML form:** Opus sometimes wrote calls in an XML tool-call format instead of the JSON protocol. Once it also wrote an entire imagined episode, with invented feedback.
+- **Fixes applied mid-batch:** the parser now accepts the XML form, runs only the first call in a reply, and has a "never write tool results" prompt line. Affected episodes were rerun. Episodes before and after the fix therefore saw slightly different planner prompts.
+
+Infrastructure:
+- **Usage limit:** 79 episodes that hit the subscription's 5-hour usage limit were discarded and rerun. The planner now stops on a usage-limit reply instead of spending turns.
+- **Restarts:** the batch survived several container restarts by running as a resumable queue, restarted by an hourly check-in.
+
 ## Notes for maintainers
 
 - **Possible RoboUse camera issue:** the agent-facing MetaWorld `corner` image is vertically flipped relative to the native recording. The reported calibration matches the flipped image, so triangulation still works. It may still be worth checking the row order in the RoboUse capture path.
@@ -100,6 +145,7 @@ How the observations relate to the paper's claims:
 | `results/<run>/transcript.jsonl` | per-turn model text and tool calls; image data is not included |
 | `results/<run>/agent_log.txt` | condensed console log |
 | `media/` | filmstrip and videos |
+| `opus_batch/` | per-episode results for the 183-episode Opus batch |
 | `scripts/` | experiment scripts |
 
 ## Reproducing
@@ -116,4 +162,4 @@ For rollouts, set `WORK` to a scratch directory and create the RoboUse environme
 WORK=/path/to/work reports/cpu-smoke-replication/scripts/run_episode.sh metaworld/metaworld-push haiku haiku_push --max-turns 30 --wall-s 600 --code
 ```
 
-This requires an authenticated `claude` CLI on `PATH`.
+This requires an authenticated `claude` CLI on `PATH`. For the full batch, write the RoboUse inventory to `$WORK/probe/inventory.json` with `scripts/robouse/inventory.py`, then run `WORK=... reports/cpu-smoke-replication/scripts/run_batch_fg.sh`. The batch is resumable and halts on usage limits.

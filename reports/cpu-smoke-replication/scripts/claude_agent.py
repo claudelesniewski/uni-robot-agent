@@ -33,8 +33,9 @@ You cannot call tools natively here. To act, end every reply with exactly one fe
 ```
 Calls in one block run sequentially in the given order; you then receive each call's feedback
 (JSON) and any returned camera images. Put several calls in one block only when later calls do
-not depend on earlier results. Keep reasoning short. Call `finish` only after verifying success
-in current observations. Available tools and their JSON-schema arguments:
+not depend on earlier results. Keep reasoning short. Never write tool results or feedback yourself:
+results arrive only in the next message, after the calls actually run. Call `finish` only after
+verifying success in current observations. Available tools and their JSON-schema arguments:
 """
 
 
@@ -85,6 +86,22 @@ def compact(d, limit=3500):
     return text if len(text) <= limit else text[:limit] + "...(truncated)"
 
 
+def parse_invoke_xml(text):
+    """Accept the native XML tool-call form some models fall back to; stop at the first invented result."""
+    calls = []
+    for m in re.finditer(r'<invoke name="([A-Za-z_]+)">(.*?)</invoke>', text, re.S):
+        args = {}
+        for pm in re.finditer(r'<parameter name="([A-Za-z_]+)">(.*?)</parameter>', m.group(2), re.S):
+            raw = pm.group(2).strip()
+            try:
+                args[pm.group(1)] = json.loads(raw)
+            except json.JSONDecodeError:
+                args[pm.group(1)] = raw
+        calls.append({"name": m.group(1), "arguments": args})
+        break  # only the first call: anything after it may be invented feedback
+    return calls or None
+
+
 def parse_calls(text):
     blocks = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.S)
     start = text.find('{"calls"')
@@ -94,14 +111,22 @@ def parse_calls(text):
             blocks.append(json.dumps(obj))
         except json.JSONDecodeError:
             pass
-    for b in reversed(blocks):
+    xml_at = text.find("<invoke ")
+    first_json_at = min([text.find(b) for b in blocks if text.find(b) >= 0] or [len(text) + 1])
+    if 0 <= xml_at < first_json_at:
+        return parse_invoke_xml(text)
+    for b in blocks:  # earliest valid block: later blocks may follow invented results
         try:
             calls = json.loads(b)["calls"]
             if isinstance(calls, list) and all(isinstance(c, dict) and "name" in c for c in calls):
                 return calls
         except (json.JSONDecodeError, KeyError, TypeError):
             continue
-    return None
+    return parse_invoke_xml(text)
+
+
+class PlannerUnavailable(RuntimeError):
+    """The planner service refused the request (usage limit, API error): not a model decision."""
 
 
 class ClaudePlanner:
@@ -136,7 +161,10 @@ class ClaudePlanner:
             ev = json.loads(line)
             if ev.get("type") == "result":
                 self.cost = ev.get("total_cost_usd") or self.cost  # cumulative per session
-                return ev.get("result") or "", ev, time.time() - t0
+                text = ev.get("result") or ""
+                if ev.get("is_error") or re.search(r"hit your .{0,40}limit", text, re.I):
+                    raise PlannerUnavailable(text[:200] or ev.get("subtype") or "error result")
+                return text, ev, time.time() - t0
 
     def close(self):
         try:
@@ -205,6 +233,8 @@ def main():
                 text, ev, dt = planner.ask(content)
             except TimeoutError as e:
                 print(f"planner_timeout: {e}", flush=True); infra_error = str(e); break
+            except PlannerUnavailable as e:
+                print(f"planner_unavailable: {e}", flush=True); infra_error = f"planner_unavailable: {e}"; break
             calls = parse_calls(text)
             u = ev.get("usage", {})
             print(f"turn {turn}: {dt:.0f}s ${planner.cost:.3f} in={u.get('input_tokens')}+cache{u.get('cache_read_input_tokens')} "
